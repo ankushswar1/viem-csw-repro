@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a minimal reproduction of an issue we're seeing where signatures from the Coinbase Smart Wallet don't seem to verify consistently. Specifically the behavior we see is that:
+- When verifying signatures from the frontend, using viem's `verifyMessage` action, the signature verifies correctly
+- When verifying the same exact signature from the backend (e.g. a NextJS API handler), using viem's `verifyMessage` action, verification fails
 
-## Getting Started
+## Repro details
 
-First, run the development server:
+In this example app, I have stored an example `address`, (SIWE) `message`, and `signature` from the Coinbase Smart Wallet in `@/lib/siwe.ts`. 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+To verify the signature client-side, I import these fields into `@/app/page.tsx` and verify them in the `onVerifyMessage` function here. This verification suceeds.
+
+To verify the siganture API-side, I import these fields into `@/app/api/route.ts` and verify them within the API handler. I then make a request to this API via `onVerifyApi` in `@/app/page.tsx` to trigger verification, but verification fails within the API handler. 
+
+## Steps to reproduce
+1. Clone this repository and install dependencies
+```sh
+npm i
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+2. Run the app and open `http://localhost:3000` in your browser
+```sh
+npm run dev
+```
+3. Click the **Verify signature client-side** button in the app. This will attempt to use viem's `verifyMessage` on the frontend to verify the signature and it should succeed (as expected)
+4. Click the **Verify signature API-side** button in the app. This will attempt to use viem's `verifyMessage` in a NextJS API handler to verify the same exact signature. This seems to consistently fail, which is unexpected, as it's the same `signature` / `message` / `address` combination as the client-side verification. 
