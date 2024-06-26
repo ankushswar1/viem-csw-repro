@@ -4,11 +4,11 @@ This is a minimal reproduction of an issue we're seeing where signatures from th
 
 ## Repro details
 
-In this example app, I have stored an example `address`, (SIWE) `message`, and `signature` from the Coinbase Smart Wallet in `@/lib/siwe.ts`. 
+In this example app, I have stored an example `address`, (SIWE) `message`, and `signature` from the Coinbase Smart Wallet in `@/lib/siwe.ts`. (See [here](https://github.com/ankushswar1/viem-csw-repro/blob/main/lib/siwe.ts). 
 
-To verify the signature client-side, I import these fields into `@/app/page.tsx` and verify them in the `onVerifyMessage` function here. This verification suceeds.
+To verify the signature client-side, I import these fields into `@/app/page.tsx` and verify them in the `onVerifyMessage` function [here](https://github.com/ankushswar1/viem-csw-repro/blob/063b307e2c02cc18b011b81a6ad486fc5685fb58/app/page.tsx#L13). This verification suceeds.
 
-To verify the siganture API-side, I import these fields into `@/app/api/route.ts` and verify them within the API handler. I then make a request to this API via `onVerifyApi` in `@/app/page.tsx` to trigger verification, but verification fails within the API handler. 
+To verify the siganture API-side, I import these fields into `@/app/api/route.ts` and verify them within [the API handler](https://github.com/ankushswar1/viem-csw-repro/blob/main/app/api/route.ts). I then make a request to this API via [`onVerifyApi`](https://github.com/ankushswar1/viem-csw-repro/blob/063b307e2c02cc18b011b81a6ad486fc5685fb58/app/page.tsx#L25) in `@/app/page.tsx` to trigger verification, but verification fails within the API handler. 
 
 ## Steps to reproduce
 1. Clone this repository and install dependencies
